@@ -1,0 +1,11 @@
+---
+
+# vsts variables
+vsts_agent_path: "/opt/vsts-agent"
+vsts_agent_version: "2.144.2"
+vsts_deployment_group: "your_deployment_group"
+vsts_project_name: "your_project"
+vsts_token: "your_key"
+vsts_url: "your_vsts_url"
+vsts_user: vsts
+vsts_work_group: "your_work_group"

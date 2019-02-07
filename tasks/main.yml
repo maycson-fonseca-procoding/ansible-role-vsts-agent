@@ -1,0 +1,46 @@
+---
+
+- name: create vsts agent directory
+  file:
+    state: directory
+    path: "{{ vsts_agent_path }}"
+
+- name: get vsts agent
+  unarchive:
+    owner: "{{ ansible_user }}"
+    remote_src: yes
+    src: "https://vstsagentpackage.azureedge.net/agent/{{ vsts_agent_version }}/vsts-agent-linux-x64-{{ vsts_agent_version }}.tar.gz"
+    dest: "{{ vsts_agent_path }}"
+
+- name: configure vsts agent
+  shell: |
+    ./config.sh \
+    --deploymentGroup \
+    --deploymentGroupName "{{ vsts_deployment_group }}" \
+    --acceptteeeula \
+    --agent {{ ansible_hostname }} \
+    --url {{ vsts_url }} \
+    --work {{ vsts_work_group }} \
+    --projectname {{ vsts_project_name }} \
+    --addDeploymentGroupTags \
+    --deploymentGroupTags "{{ vsts_group_tags }}" \
+    --auth PAT --token {{ vsts_token }} \
+    --runasservice
+  become: yes
+  become_user: "{{ vsts_user }}"
+  args:
+    chdir: "{{ vsts_agent_path }}"
+
+- name: install vsts agent
+  shell: ./svc.sh install
+  become: yes
+  become_user: "{{ vsts_user }}"
+  args:
+    chdir: "{{ vsts_agent_path }}"
+
+- name: initiate vsts agent
+  shell: ./svc.sh start
+  become: yes
+  become_user: "{{ vsts_user }}"
+  args:
+    chdir: "{{ vsts_agent_path }}"
