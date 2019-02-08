@@ -1,18 +1,28 @@
 ---
 
+- name: Check that {{ vsts_agent_check }} exists
+  stat:
+    path: "{{ vsts_agent_check }}"
+  register: vsts_agent_check_result
+
 - name: create vsts agent directory
   file:
+    owner: "{{ vsts_user }}"
+    group: "{{ vsts_group }}"
+    mode: '0750'
     state: directory
     path: "{{ vsts_agent_path }}"
 
-- name: get vsts agent
+- name: Get vsts agent
   unarchive:
-    owner: "{{ ansible_user }}"
+    owner: "{{ vsts_user }}"
+    group: "{{ vsts_group }}"
     remote_src: yes
     src: "https://vstsagentpackage.azureedge.net/agent/{{ vsts_agent_version }}/vsts-agent-linux-x64-{{ vsts_agent_version }}.tar.gz"
     dest: "{{ vsts_agent_path }}"
+  when: vsts_agent_check_result.stat.exists == False
 
-- name: configure vsts agent
+- name: Configure vsts agent
   shell: |
     ./config.sh \
     --deploymentGroup \
@@ -30,17 +40,20 @@
   become_user: "{{ vsts_user }}"
   args:
     chdir: "{{ vsts_agent_path }}"
+  when: vsts_agent_check_result.stat.exists == False
 
-- name: install vsts agent
+- name: Install vsts agent
   shell: ./svc.sh install
   become: yes
-  become_user: "{{ vsts_user }}"
+  become_user: "{{ vsts_user_admin }}"
   args:
     chdir: "{{ vsts_agent_path }}"
+  when: vsts_agent_check_result.stat.exists == False
 
-- name: initiate vsts agent
+- name: Initiate vsts agent
   shell: ./svc.sh start
   become: yes
-  become_user: "{{ vsts_user }}"
+  become_user: "{{ vsts_user_admin }}"
   args:
     chdir: "{{ vsts_agent_path }}"
+  when: vsts_agent_check_result.stat.exists == False
