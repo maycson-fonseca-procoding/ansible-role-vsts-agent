@@ -1,0 +1,20 @@
+---
+
+- name: VSTS Agent
+  hosts: vsts-agent
+  vars:
+
+    # VSTS Users
+    users:
+      - username: "vsts"
+        name: "vsts user"
+
+    # VSTS Project
+    vsts_project_name: "My_Project"
+    vsts_project_url: "https://my-project-url.visualstudio.com/"
+    vsts_project_work_group: "_work"
+    vsts_token: "My_Token"
+
+  roles:
+    - ansible-role-users
+    - ansible-role-vsts-agent

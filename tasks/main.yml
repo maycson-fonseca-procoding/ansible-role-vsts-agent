@@ -12,25 +12,26 @@
     mode: '0750'
     state: directory
     path: "{{ vsts_agent_path }}"
+  when: not vsts_agent_check_result.stat.exists
 
 - name: Get vsts agent
   unarchive:
     owner: "{{ vsts_user }}"
     group: "{{ vsts_group }}"
     remote_src: yes
-    src: "https://vstsagentpackage.azureedge.net/agent/{{ vsts_agent_version }}/vsts-agent-linux-x64-{{ vsts_agent_version }}.tar.gz"
+    src: "{{ vsts_agent_url }}"
     dest: "{{ vsts_agent_path }}"
-  when: vsts_agent_check_result.stat.exists == False
+  when: not vsts_agent_check_result.stat.exists
 
 - name: Configure vsts agent
-  shell: |
+  command: |
     ./config.sh \
     --deploymentGroup \
     --deploymentGroupName "{{ vsts_deployment_group }}" \
     --acceptteeeula \
     --agent {{ ansible_hostname }} \
-    --url {{ vsts_url }} \
-    --work {{ vsts_work_group }} \
+    --url {{ vsts_project_url }} \
+    --work {{ vsts_project_work_group }} \
     --projectname {{ vsts_project_name }} \
     --addDeploymentGroupTags \
     --deploymentGroupTags "{{ vsts_group_tags }}" \
@@ -40,20 +41,29 @@
   become_user: "{{ vsts_user }}"
   args:
     chdir: "{{ vsts_agent_path }}"
-  when: vsts_agent_check_result.stat.exists == False
+  when: not vsts_agent_check_result.stat.exists
 
 - name: Install vsts agent
-  shell: ./svc.sh install
+  command: ./svc.sh install
   become: yes
   become_user: "{{ vsts_user_admin }}"
   args:
     chdir: "{{ vsts_agent_path }}"
-  when: vsts_agent_check_result.stat.exists == False
+  when: not vsts_agent_check_result.stat.exists
 
 - name: Initiate vsts agent
-  shell: ./svc.sh start
+  command: ./svc.sh start
   become: yes
   become_user: "{{ vsts_user_admin }}"
   args:
     chdir: "{{ vsts_agent_path }}"
-  when: vsts_agent_check_result.stat.exists == False
+  when: not vsts_agent_check_result.stat.exists
+
+- name: create vsts agent check file
+  file:
+    owner: "{{ vsts_user }}"
+    group: "{{ vsts_group }}"
+    mode: '0600'
+    state: touch
+    path: "{{ vsts_agent_check }}"
+  when: not vsts_agent_check_result.stat.exists
