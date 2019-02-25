@@ -4,7 +4,7 @@
 vsts_agent_check: "/opt/vsts-agent/.vsts_check"
 vsts_agent_path: "/opt/vsts-agent"
 vsts_agent_url: "https://vstsagentpackage.azureedge.net/agent/{{ vsts_agent_version }}/vsts-agent-linux-x64-{{ vsts_agent_version }}.tar.gz"
-vsts_agent_version: "2.146.0"
+vsts_agent_version: "2.148.0"
 vsts_deployment_group: "your_deployment_group"
 vsts_group: vsts
 vsts_project_name: "your_project"
@@ -12,4 +12,4 @@ vsts_project_url: "your_vsts_project_url"
 vsts_project_work_group: "your_project_work_group"
 vsts_project_token: "your_project_token"
 vsts_user: vsts
-vsts_user_admin: root
+vsts_user_admin: vsts
