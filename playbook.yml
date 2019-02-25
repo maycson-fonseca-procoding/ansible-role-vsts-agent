@@ -10,7 +10,7 @@
         name: "vsts user"
         home: "/opt/vsts"
         shell: "/bin/false"
-        groups: ['vsts','admin']
+        groups: ['vsts', 'admin']
 
     # VSTS Project
     vsts_project_name: "My_Project"
