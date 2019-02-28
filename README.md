@@ -12,7 +12,7 @@
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-# ansible-role-postfix
+# ansible-role-vsts-agent
 
 An [Ansible](https://www.ansible.com) role to install/configure [Vsts-Agent]
 

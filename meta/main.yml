@@ -2,7 +2,7 @@
 
 galaxy_info:
   author: Maycson Fonseca <maycson.fonseca@procoding.com.br>
-  description: Template for ansible roles
+  description: Role Ansible Vsts Agent
   company: "Pro Coding"
   license: BSD
   min_ansible_version: 2.1

@@ -1,9 +1,22 @@
 ---
 
-- name: Check that {{ vsts_agent_check }} exists
-  stat:
-    path: "{{ vsts_agent_check }}"
-  register: vsts_agent_check_result
+- name: populate service facts
+  service_facts:
+
+- name: ensure service is enabled
+  service:
+    name: "{{ vsts_service }}"
+    enabled: true
+  when:
+    - "(vsts_service) in services"
+
+- name: ensure service is started
+  service:
+    name: "{{ vsts_service }}"
+    state: started
+  when:
+    - "(vsts_service) in services"
+    - ansible_facts.services[(vsts_service)].state is match("stopped")
 
 - name: create vsts agent directory
   file:
@@ -12,18 +25,24 @@
     mode: '0750'
     state: directory
     path: "{{ vsts_agent_path }}"
-  when: not vsts_agent_check_result.stat.exists
+  when:
+    - "(vsts_service) not in services"
 
-- name: Get vsts agent
+- name: get vsts agent
+  become: yes
+  become_user: "{{ vsts_user }}"
   unarchive:
     owner: "{{ vsts_user }}"
     group: "{{ vsts_group }}"
     remote_src: yes
     src: "{{ vsts_agent_url }}"
     dest: "{{ vsts_agent_path }}"
-  when: not vsts_agent_check_result.stat.exists
+  when:
+    - "(vsts_service) not in services"
 
-- name: Configure vsts agent
+- name: configure vsts agent
+  become: yes
+  become_user: "{{ vsts_user }}"
   command: |
     ./config.sh \
     --deploymentGroup \
@@ -37,33 +56,25 @@
     --deploymentGroupTags "{{ vsts_group_tags }}" \
     --auth PAT --token {{ vsts_token }} \
     --runasservice
+  args:
+    chdir: "{{ vsts_agent_path }}"
+  when:
+    - "(vsts_service) not in services"
+
+- name: install vsts agent
   become: yes
   become_user: "{{ vsts_user }}"
+  command: sudo ./svc.sh install
   args:
     chdir: "{{ vsts_agent_path }}"
-  when: not vsts_agent_check_result.stat.exists
+  when:
+    - "(vsts_service) not in services"
 
-- name: Install vsts agent
-  command: ./svc.sh install
+- name: initiate vsts agent
   become: yes
-  become_user: "{{ vsts_user_admin }}"
+  become_user: "{{ vsts_user }}"
+  command: sudo ./svc.sh start
   args:
     chdir: "{{ vsts_agent_path }}"
-  when: not vsts_agent_check_result.stat.exists
-
-- name: Initiate vsts agent
-  command: ./svc.sh start
-  become: yes
-  become_user: "{{ vsts_user_admin }}"
-  args:
-    chdir: "{{ vsts_agent_path }}"
-  when: not vsts_agent_check_result.stat.exists
-
-- name: create vsts agent check file
-  file:
-    owner: "{{ vsts_user }}"
-    group: "{{ vsts_group }}"
-    mode: '0600'
-    state: touch
-    path: "{{ vsts_agent_check }}"
-  when: not vsts_agent_check_result.stat.exists
+  when:
+    - "(vsts_service) not in services"

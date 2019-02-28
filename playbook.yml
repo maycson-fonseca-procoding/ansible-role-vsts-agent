@@ -1,23 +1,21 @@
 ---
 
-- name: VSTS Agent
+- name: Vsts Agent
   hosts: vsts-agent
   vars:
-
-    # VSTS Users
+    # Vsts User
     users:
       - username: "vsts"
         name: "vsts user"
-        home: "/opt/vsts"
         shell: "/bin/false"
+        users_create_homedirs: false
         groups: ['vsts', 'admin']
-
-    # VSTS Project
+    # Vsts Settings
+    vsts_deployment_group: "My_Project_Group"
+    vsts_organization: "My_Organization"
     vsts_project_name: "My_Project"
-    vsts_project_url: "https://my-project-url.visualstudio.com/"
-    vsts_project_work_group: "_work"
+    vsts_project_work_group: "My_Work_Group"
     vsts_token: "My_Token"
-
   roles:
     - ansible-role-users
     - ansible-role-vsts-agent
