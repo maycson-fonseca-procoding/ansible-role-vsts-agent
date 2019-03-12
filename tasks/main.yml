@@ -29,19 +29,25 @@
     - "(vsts_service) not in services"
 
 - name: get vsts agent
-  become: yes
+  become: true
   become_user: "{{ vsts_user }}"
   unarchive:
     owner: "{{ vsts_user }}"
     group: "{{ vsts_group }}"
-    remote_src: yes
+    remote_src: true
     src: "{{ vsts_agent_url }}"
     dest: "{{ vsts_agent_path }}"
   when:
     - "(vsts_service) not in services"
 
+- name: install dependecies
+  apt:
+    name:
+      - "libcurl4-openssl-dev"
+    state: present
+
 - name: configure vsts agent
-  become: yes
+  become: true
   become_user: "{{ vsts_user }}"
   command: |
     ./config.sh \
@@ -62,7 +68,7 @@
     - "(vsts_service) not in services"
 
 - name: install vsts agent
-  become: yes
+  become: true
   become_user: "{{ vsts_user }}"
   command: sudo ./svc.sh install
   args:
@@ -71,7 +77,7 @@
     - "(vsts_service) not in services"
 
 - name: initiate vsts agent
-  become: yes
+  become: true
   become_user: "{{ vsts_user }}"
   command: sudo ./svc.sh start
   args:
