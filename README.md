@@ -18,7 +18,7 @@ An [Ansible](https://www.ansible.com) role to install/configure [Vsts-Agent]
 
 ## Build Status
 
-[![Build Status](https://travis-ci.org/maycson-fonseca-procoding/ansible-role-vsts-agent.svg?branch=master)](https://travis-ci.org/maycson-fonseca-procoding/ansible-role-vsts-agent)
+[![Build Status](https://travis-ci.org/maycson-fonseca/ansible-role-vsts-agent.svg?branch=master)](https://travis-ci.org/maycson-fonseca/ansible-role-vsts-agent)
 
 ## Role Variables
 
